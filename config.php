@@ -172,5 +172,9 @@ $THEME->javascripts = array(
 $THEME->javascripts_footer = array(
     'opaque', 'bootstrap'
 );
-
+/*
+$THEME->javascripts_footer = array(
+    'opaque'
+);
+*/
 $THEME->hidefromselector = false;

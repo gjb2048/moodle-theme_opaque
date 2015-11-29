@@ -1,5 +1,5 @@
 {
-  "name": "theme-opaque",
+  "name": "theme_opaque",
   "version": "0.1.0",
   "description": "Moodle Opaque theme.",
   "main": "Gruntfile.js",

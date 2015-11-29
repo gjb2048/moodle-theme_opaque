@@ -189,20 +189,28 @@ module.exports = function(grunt) {
             },
             amd: {
                 options: {
-                    modules: 'umd'
+                    modules: 'amd'
                 },
                 files: {
-                    'amd/src/bootstrap/util.js'      : 'js/src/bootstrap/util.js',
-                    'amd/src/bootstrap/alert.js'     : 'js/src/bootstrap/alert.js',
-                    'amd/src/bootstrap/button.js'    : 'js/src/bootstrap/button.js',
-                    'amd/src/bootstrap/carousel.js'  : 'js/src/bootstrap/carousel.js',
-                    'amd/src/bootstrap/collapse.js'  : 'js/src/bootstrap/collapse.js',
-                    'amd/src/bootstrap/dropdown.js'  : 'js/src/bootstrap/dropdown.js',
-                    'amd/src/bootstrap/modal.js'     : 'js/src/bootstrap/modal.js',
-                    'amd/src/bootstrap/scrollspy.js' : 'js/src/bootstrap/scrollspy.js',
-                    'amd/src/bootstrap/tab.js'       : 'js/src/bootstrap/tab.js',
-                    'amd/src/bootstrap/tooltip.js'   : 'js/src/bootstrap/tooltip.js',
-                    'amd/src/bootstrap/popover.js'   : 'js/src/bootstrap/popover.js'
+                    'js/dist/bootstrap/amd/util.js'      : 'js/src/bootstrap/util.js',
+                    'js/dist/bootstrap/amd/alert.js'     : 'js/src/bootstrap/alert.js',
+                    'js/dist/bootstrap/amd/amd/button.js'    : 'js/src/bootstrap/button.js',
+                    'js/dist/bootstrap/amd/carousel.js'  : 'js/src/bootstrap/carousel.js',
+                    'js/dist/bootstrap/amd/collapse.js'  : 'js/src/bootstrap/collapse.js',
+                    'js/dist/bootstrap/amd/dropdown.js'  : 'js/src/bootstrap/dropdown.js',
+                    'js/dist/bootstrap/amd/modal.js'     : 'js/src/bootstrap/modal.js',
+                    'js/dist/bootstrap/amd/scrollspy.js' : 'js/src/bootstrap/scrollspy.js',
+                    'js/dist/bootstrap/amd/tab.js'       : 'js/src/bootstrap/tab.js',
+                    'js/dist/bootstrap/amd/tooltip.js'   : 'js/src/bootstrap/tooltip.js',
+                    'js/dist/bootstrap/amd/popover.js'   : 'js/src/bootstrap/popover.js'
+                }
+            },
+            amd_bootstrap: {
+                options: {
+                    modules: 'amd'
+                },
+                files: {
+                    'amd/build/<%= pkg.bootstrap %>.min.js' : '<%= concat.bootstrap.dest %>'
                 }
             }
         },
@@ -365,6 +373,14 @@ module.exports = function(grunt) {
                         from: "import Util from './util'",
                         to: ""
                     }]
+            },
+            bootstrap_amd: { 
+                src: 'js/dist/bootstrap/amd/*.js',
+                    overwrite: true,
+                    replacements: [{
+                        from: "'module', './util'",
+                        to: "'module', '<%= pkg.name %>/<%= pkg.bootstrap %>_util'"
+                    }]
             }
         },
         svgmin: {                       // Task
@@ -411,6 +427,19 @@ module.exports = function(grunt) {
                 src: '<%= concat.bootstrap.dest %>',
                 dest: 'javascript/<%= pkg.bootstrap %>.min.js'
             },
+            amd: {
+      files: [{
+          expand: true,
+          cwd: 'js/dist/bootstrap/amd',
+          src: '**/*.js',
+          dest: 'amd/build',
+          ext: '.min.js',
+          rename: function(dest, src) {
+              var path = require('path');
+              return path.join(dest, '<%= pkg.bootstrap %>_' + path.basename(src));
+          }
+      }]
+            },
             dynamic_mappings: {
                 files: grunt.file.expandMapping(
                     ['**/src/*.js', '**/amd/src/**/*.js', '!**/node_modules/**'],
@@ -439,8 +468,8 @@ module.exports = function(grunt) {
     //grunt.registerTask('dist-js', ['babel:dev', 'concat', 'lineremover', 'babel:dist', 'stamp', 'uglify:core', 'commonjs']);
     //grunt.registerTask('dist-js', ['babel:dev', 'concat', 'lineremover', 'babel:dist', 'uglify:core', 'commonjs']);
     //grunt.registerTask('dist-js', ['babel:dev', 'concat', 'lineremover', 'babel:dist', 'commonjs']);
-    grunt.registerTask('dist-js', ['babel:dev', 'concat', 'lineremover', 'replace:bootstrap', 'babel:dist', 'commonjs']);
-    grunt.registerTask('commonjs', ['babel:umd', 'babel:amd', 'amd']);
+    grunt.registerTask('dist-js', ['babel:dev', 'concat', 'lineremover', 'replace:bootstrap', 'babel:dist', 'babel:amd_bootstrap', 'commonjs']);
+    grunt.registerTask('commonjs', ['babel:umd', 'babel:amd', 'replace:bootstrap_amd', 'amd']);
 
     // CSS distribution task.
     // Supported Compilers: sass (Ruby) and libsass.
